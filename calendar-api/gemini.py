@@ -39,8 +39,12 @@ def initialize_history():
         },
       ]
 
-def main(history=None):
+def main(user_message=None, history=None):
     print("main is starting")
+
+    if not user_message or len(user_message) < 2:
+        user_message = "INSERT_INPUT_HERE"
+    print("user message: ", user_message)
 
     if history is None:
         history = initialize_history()
@@ -51,7 +55,7 @@ def main(history=None):
         history=history
     )
     
-    response = chat_session.send_message("INSERT_INPUT_HERE")
+    response = chat_session.send_message(user_message)
 
     ended = False
     print(json.loads(response.text)['message'])
@@ -64,7 +68,6 @@ def main(history=None):
     # # switch for each method
     # if method == "talk":
     #     print("say out loud: ", message)
-    #     response = chat_session.send_message("Now, the user has the following message: " + input("user: "))
     # elif method == "add":
     #     print("say out loud: ", message)
     #     add_event_payload = {
@@ -79,7 +82,6 @@ def main(history=None):
     #         print("say out loud: Event added successfully.")
     #     else:
     #         print("say out loud: Failed to add event.")
-    #     response = chat_session.send_message("Now, the user has the following message: " + input("user: "))
     # elif method == "update":
     #     print("say out loud: ", message)
     #     update_event_payload = {
@@ -113,7 +115,3 @@ def main(history=None):
     #     ended = True
 
     return {'message': message, 'history': chat_session.history, 'ended': ended}
-    
-
-# if __name__ == '__main__':
-#   main()

@@ -15,6 +15,9 @@ twilio_client = Client()
 model = vosk.Model("model")
 global history
 history = None
+
+global user_message
+user_message = None
 test="HELLO"
 CL = '\x1b[0K'
 BS = '\x08'
@@ -34,6 +37,7 @@ def call():
 @sock.route('/stream')
 def stream(ws):
     """Receive and transcribe audio stream."""
+    global user_message
     resp = VoiceResponse()
     rec = vosk.KaldiRecognizer(model, 16000)
     last_audio_time = time.time()
@@ -55,7 +59,6 @@ def stream(ws):
             rms = audioop.rms(audio, 2)  # 2 is the sample width in bytes
             
             if rms > 300:
-                print("Audio activity detected")
                 last_audio_time = time.time()
             
             if time.time() - last_audio_time > 5:
@@ -70,7 +73,8 @@ def stream(ws):
                 r = json.loads(rec.PartialResult())
                 response += CL + r['partial'] + BS * len(r['partial'])
                 print(CL + r['partial'] + BS * len(r['partial']), end='', flush=True)
-    print("RESPONSE: ", response)
+    print("MESSAGE INPUT: ", response)
+    user_message = response
     # resp.redirect("/calendar")
 
 
@@ -103,8 +107,8 @@ def calendar_agent():
     gemini_response = {}
     try:
         gemini_response = call_gemini_agent()
-        print("GEMINI RESPONSE: ", gemini_response)
-        resp.say(gemini_response)
+        print("GEMINI RESPONSE")
+
         if gemini_response.strip():  # Only say if there's actual content
             resp.say(gemini_response)
         else:
@@ -116,7 +120,7 @@ def calendar_agent():
     return str(resp), 200, {'Content-Type': 'text/xml'}
 
 def call_gemini_agent():
-
+    global history, user_message
     import sys
     import json
     sys.path.append('/Users/anav/Desktop/Personal/maboy/calendar-api')
@@ -124,9 +128,13 @@ def call_gemini_agent():
     try:
         from gemini import main
         print("Calling Gemini agent...")
-        result = main()
+        print("USER MESSAGE: ", user_message)
+        print()
+        print("HISTORY: ", history)
+        print()
+        result = main(user_message, history)
         history = result['history']
-        print("Gemini agent response:", result)
+        print("Gemini agent response")
         return result['message']
     except Exception as e:
         print(f"Error importing/running Gemini agent: {e}")
