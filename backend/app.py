@@ -98,9 +98,16 @@ def gather():
     resp.say("In gather")
     if digit_pressed == '1':
         resp.say("Button has been pressed")
-        gemini_response = call_gemini_agent()
-        print(gemini_response)
-        resp.say(gemini_response)
+        try:
+            gemini_response = call_gemini_agent()
+            if gemini_response.strip():  # Only say if there's actual content
+                resp.say(gemini_response)
+            else:
+                resp.say("No response from calendar agent.")
+        except Exception as e:
+            print(f"Error calling Gemini agent: {e}")
+            resp.say("Sorry, there was an error with the calendar agent.")
+
     else:
         resp.say("INVALID")
         resp.redirect('/voice')
