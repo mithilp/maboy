@@ -4,7 +4,7 @@ import json
 import os
 from flask import Flask, request
 from flask_sock import Sock, ConnectionClosed
-from twilio.twiml.voice_response import VoiceResponse, Start
+from twilio.twiml.voice_response import VoiceResponse, Start, Gather
 from twilio.rest import Client
 import vosk
 import time
@@ -82,14 +82,34 @@ def stream(ws):
 
 @app.route("/voice", methods=['GET', 'POST'])
 def voice():
-    """Respond to incoming phone calls with a 'Hello world' message"""
     # Start our TwiML response
     resp = VoiceResponse()
+    gather = Gather(num_digits=1, action='/gather', method='POST')
 
-    # Read a message aloud to the caller
-    resp.say("Hello world!")
-
+    gather.say('Press 1 to interact with your google calendar agent.')
+    resp.append(gather)
+    resp.redirect('/voice')
     return str(resp)
+
+@app.route("/gather", methods=['GET', 'POST'])
+def gather():
+    digit_pressed = request.form.get('Digits')
+    resp = VoiceResponse()
+    resp.say("In gather")
+    if digit_pressed == '1':
+        resp.say("Button has been pressed")
+        gemini_response = call_gemini_agent()
+        print(gemini_response)
+        resp.say(gemini_response)
+    else:
+        resp.say("INVALID")
+        resp.redirect('/voice')
+    return str(resp)
+
+def call_gemini_agent():
+    import subprocess
+    result = subprocess.run(['python3.12', '../calendar-api/gemini.py'], capture_output=True, text=True)
+    return result.stdout
 
 @app.route("/", methods=['GET'])
 def home():
