@@ -80,5 +80,52 @@ def add_event():
     except HttpError as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/update-event-time/<eventId>', methods=['PATCH'])
+def update_event_time(eventId):
+    creds = get_credentials()
+    try:
+        service = build('calendar', 'v3', credentials=creds)
+        data = request.get_json()
+
+        # Get the existing event
+        event = service.events().get(calendarId='primary', eventId=eventId).execute()
+
+        # Update the timing
+        event['start']['dateTime'] = data.get('new_start_time')
+        event['end']['dateTime'] = data.get('new_end_time')
+        
+        # If timezone is provided, update it
+        if 'timezone' in data:
+            event['start']['timeZone'] = data['timezone']
+            event['end']['timeZone'] = data['timezone']
+
+        updated_event = service.events().update(
+            calendarId='primary',
+            eventId=eventId,
+            body=event
+        ).execute()
+
+        return jsonify(updated_event), 200
+
+    except HttpError as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/delete-event/<eventId>', methods=['DELETE'])
+def delete_event(eventId):
+    creds = get_credentials()
+    try:
+        service = build('calendar', 'v3', credentials=creds)
+        
+        # Try to delete the event
+        service.events().delete(
+            calendarId='primary',
+            eventId=eventId
+        ).execute()
+
+        return jsonify({"message": "Event successfully deleted"}), 200
+
+    except HttpError as e:
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == '__main__':
   app.run(port=5000, debug=True)
