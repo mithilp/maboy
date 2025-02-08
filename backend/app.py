@@ -47,12 +47,28 @@ def stream(ws):
             audio = base64.b64decode(packet['media']['payload'])
             audio = audioop.ulaw2lin(audio, 2)
             audio = audioop.ratecv(audio, 2, 1, 8000, 16000, None)[0]
-            if not all(byte == 0 for byte in audio):
-                    last_audio_time = time.time()
+            # print(f"Received {len(audio)} bytes of audio")
+            # print((not all(byte == 0 for byte in audio)))
+            # if not all(byte == 0 for byte in audio):
+            #         print("Audio detected")
+            #         last_audio_time = time.time()
 
-            if time.time() - last_audio_time > 3: 
-                print("\nNo audio detected for 3 seconds. Ending call.")
+            # if time.time() - last_audio_time > 3: 
+            #     print("\nNo audio detected for 3 seconds. Ending call.")
+            #     break
+
+            # Calculate RMS volume
+            rms = audioop.rms(audio, 2)  # 2 is the sample width in bytes
+            print(f"Current volume level: {rms}")
+            
+            if rms > 300:
+                print("Audio activity detected")
+                last_audio_time = time.time()
+            
+            if time.time() - last_audio_time > 3:
+                print("\nNo significant audio detected for 3 seconds. Ending call.")
                 break
+
             if rec.AcceptWaveform(audio):
                 r = json.loads(rec.Result())
                 response += CL + r['text'] + ' '
@@ -80,4 +96,4 @@ def home():
     return "<h1>Welcome to the Twilio Voice API</h1>"
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5002)
