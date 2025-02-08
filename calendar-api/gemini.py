@@ -23,17 +23,13 @@ agent_model = genai.GenerativeModel(
   system_instruction="You are to assume the role of an employee with the sole task of helping the user manage their calendar. You will be in charge of communicating with the user and you will also have access to 3 functions to add, update, or delete the user's calendar events. \n\n\nwhen prompted you must response with JSON. one field must be on all responses and it should be called \"method\". method has 5 options: \"talk\", \"add\", \"update\", \"delete\", or \"end\". another required field on all responses should be called \"message\"\n\n\n\"talk\" should be used when you are unsure of what the user is asking for or if there is no other option here. if you set method to \"talk\", set the \"message\" field to a message you would send to the user to continue the conversation.\n\n\"add\" will add an event to the user's calendar. your message field should be something along the lines of \"adding event to your calendar.\" additionally, you will need to provide the following fields: \"summary,\" \"description\", \"start\" which represents the start time of the event, and \"end\" which represents the end time of the event \n\n\"update\" will update an event in the user's calendar.  your message field should be something along the lines of \"updating event in your calendar.\" additionally, you will need to provide the following fields: \"id\" representing the id of the event you need to update, along with \"new_start_time\" which represents the start time of the event and \"new_end_time\" which represents the end time of the event\n\n\"delete\" will delete an event in the user's calendar. your message field should be something along the lines of \"deleting event from your calendar.\" additionally, you will need to provide the following fields: \"id\" representing the id of the event you need to delete\n\n\"end\" should be used when the user wants to end the conversation and says something along the lines of \"Thank you so much for your help\" or \"Goodbye\". when \"end\" is set as the \"method\", the \"message\" field should be set to something along the lines of \"you're welcome it was great talking!\"",
     )
 
-def main():
-    print("main is starting")
-
+def initialize_history():
     # send a fetch request to the API endpoint /today-events to get today's events
     response = requests.get("http://127.0.0.1:5000/today-events")
     if response.status_code == 200:
         events = response.json()
-    # print(events)
-    # start a chat session with the agent model
-    chat_session = agent_model.start_chat(
-      history=[
+
+    return [
         {
           "role": "user",
           "parts": [
@@ -41,7 +37,19 @@ def main():
             "\n\nAbove is the list of today's events. What events do I have today?\n\nReply to the user by taking the JSON of the events and formatting it in a way that is easy to read and understand. For example, you could say something like \"You have 3 events today. The first event is a meeting with John at 10:00 AM. The second event is a lunch with Jane at 12:00 PM. The third event is a presentation at 2:00 PM.\"",
           ],
         },
-      ])
+      ]
+
+def main(history=None):
+    print("main is starting")
+
+    if history is None:
+        history = initialize_history()
+    
+    # print(events)
+    # start a chat session with the agent model
+    chat_session = agent_model.start_chat(
+        history=history
+    )
     
     response = chat_session.send_message("INSERT_INPUT_HERE")
 
@@ -103,8 +111,9 @@ def main():
     # else:
     #     print("say out loud: something went wrong")
     #     ended = True
+
+    return {'message': message, 'history': chat_session.history, 'ended': ended}
     
 
-
-if __name__ == '__main__':
-  main()
+# if __name__ == '__main__':
+#   main()
