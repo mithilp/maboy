@@ -65,53 +65,51 @@ def main(user_message=None, history=None):
 
     print("method:", method)
 
-    # # switch for each method
-    # if method == "talk":
-    #     print("say out loud: ", message)
-    # elif method == "add":
-    #     print("say out loud: ", message)
-    #     add_event_payload = {
-    #         "summary": json.loads(response.text)['summary'],
-    #         "description": json.loads(response.text)['description'],
-    #         "start": json.loads(response.text)['start'],
-    #         "end": json.loads(response.text)['end'],
-    #         "timeZone": json.loads(response.text).get('timeZone', 'America/New_York'),
-    #     }
-    #     add_response = requests.post("http://127.0.0.1:5000/add-event", json=add_event_payload)
-    #     if add_response.status_code == 201:
-    #         print("say out loud: Event added successfully.")
-    #     else:
-    #         print("say out loud: Failed to add event.")
-    # elif method == "update":
-    #     print("say out loud: ", message)
-    #     update_event_payload = {
-    #         "id": json.loads(response.text)['id'],
-    #         "new_start_time": json.loads(response.text)['new_start_time'],
-    #         "new_end_time": json.loads(response.text)['new_end_time'],
-    #     }
-    #     update_response = requests.patch(f"http://127.0.0.1:5000/update-event-time/{update_event_payload['id']}", json=update_event_payload)
-    #     if update_response.status_code == 200:
-    #         print("say out loud: Event updated successfully.")
-    #     else:
-    #         print("say out loud: Failed to update event.")
-    #     response = chat_session.send_message("Now, the user has the following message: " + input("user: "))
-    # elif method == "delete":
-    #     print("say out loud: ", message)
-    #     delete_event_payload = {
-    #         "id": json.loads(response.text)['id']
-    #     }
-    #     delete_response = requests.delete(f"http://127.0.0.1:5000/delete-event/{delete_event_payload['id']}")
-    #     if delete_response.status_code == 200:
-    #         print("say out loud: Event deleted successfully.")
-    #     else:
-    #         print("say out loud: Failed to delete event.")
-    #     response = chat_session.send_message("Now, the user has the following message: " + input("user: "))
-    # elif method == "end":
-    #     print("say out loud:", message)
-    #     ended = True
-    #     print("end call")
-    # else:
-    #     print("say out loud: something went wrong")
-    #     ended = True
+    # switch for each method
+    if method == "talk":
+        print("say out loud: ", message)
+    elif method == "add":
+        print("say out loud: ", message)
+        add_event_payload = {
+            "summary": json.loads(response.text)['summary'],
+            "description": json.loads(response.text)['description'],
+            "start": json.loads(response.text)['start'],
+            "end": json.loads(response.text)['end'],
+            "timeZone": json.loads(response.text).get('timeZone', 'America/New_York'),
+        }
+        add_response = requests.post("http://127.0.0.1:5000/add-event", json=add_event_payload)
+        if add_response.status_code == 201:
+            print("say out loud: Event added successfully.")
+        else:
+            print("say out loud: Failed to add event.")
+    elif method == "update":
+        print("say out loud: ", message)
+        update_event_payload = {
+            "id": json.loads(response.text)['id'],
+            "new_start_time": json.loads(response.text)['new_start_time'],
+            "new_end_time": json.loads(response.text)['new_end_time'],
+        }
+        update_response = requests.patch(f"http://127.0.0.1:5000/update-event-time/{update_event_payload['id']}", json=update_event_payload)
+        if update_response.status_code == 200:
+            print("say out loud: Event updated successfully.")
+        else:
+            print("say out loud: Failed to update event.")
+    elif method == "delete":
+        print("say out loud: ", message)
+        delete_event_payload = {
+            "id": json.loads(response.text)['id']
+        }
+        delete_response = requests.delete(f"http://127.0.0.1:5000/delete-event/{delete_event_payload['id']}")
+        if delete_response.status_code == 200:
+            print("say out loud: Event deleted successfully.")
+        else:
+            print("say out loud: Failed to delete event.")
+    elif method == "end":
+        print("say out loud:", message)
+        ended = True
+        print("end call")
+    else:
+        print("say out loud: something went wrong")
+        ended = True
 
     return {'message': message, 'history': chat_session.history, 'ended': ended}
