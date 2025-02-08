@@ -59,7 +59,6 @@ def stream(ws):
 
             # Calculate RMS volume
             rms = audioop.rms(audio, 2)  # 2 is the sample width in bytes
-            print(f"Current volume level: {rms}")
             
             if rms > 300:
                 print("Audio activity detected")
@@ -86,18 +85,23 @@ def voice():
     resp = VoiceResponse()
     gather = Gather(num_digits=1, action='/gather', method='POST')
 
-    gather.say('Press 1 to interact with your google calendar agent.')
+    gather.say('Press 1.1 to interact with your google calendar agent.')
+    print("ABOUT TO GATHER")
     resp.append(gather)
     resp.redirect('/voice')
     return str(resp)
 
 @app.route("/gather", methods=['GET', 'POST'])
 def gather():
+    print("IN GATHER")
     digit_pressed = request.form.get('Digits')
+
     resp = VoiceResponse()
     resp.say("In gather")
+    print("Digit pressed:", digit_pressed)
     if digit_pressed == '1':
-        resp.say("Button has been pressed")
+        print("Calendar agent selected")
+        resp.say("You've selected the calendar agent.")
         try:
             gemini_response = call_gemini_agent()
             if gemini_response.strip():  # Only say if there's actual content
@@ -115,8 +119,19 @@ def gather():
 
 def call_gemini_agent():
     import subprocess
-    result = subprocess.run(['python3.12', '../calendar-api/gemini.py'], capture_output=True, text=True)
-    return result.stdout
+    print("Calling Gemini agent...")
+    process = subprocess.Popen(
+        ['python3.12', '/Users/anav/Desktop/Personal/maboy/calendar-api/gemini.py'],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+    )
+    stdout, stderr = process.communicate(timeout=10)  # 10s timeout
+
+    if stderr:
+        print(f"Gemini agent error: {stderr}")
+    print("Gemini agent response:", stdout)
+    return stdout
+    # print("Gemini agent response:", result.stdout)
+    # return result.stdout
 
 @app.route("/", methods=['GET'])
 def home():
