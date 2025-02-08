@@ -18,7 +18,6 @@ history = None
 
 global user_message
 user_message = None
-test="HELLO"
 CL = '\x1b[0K'
 BS = '\x08'
 
@@ -61,7 +60,7 @@ def stream(ws):
             if rms > 300:
                 last_audio_time = time.time()
             
-            if time.time() - last_audio_time > 5:
+            if time.time() - last_audio_time > 3:
                 print("\nNo significant audio detected for 3 seconds. Ending call.")
                 break
 
@@ -73,8 +72,8 @@ def stream(ws):
                 r = json.loads(rec.PartialResult())
                 response += CL + r['partial'] + BS * len(r['partial'])
                 print(CL + r['partial'] + BS * len(r['partial']), end='', flush=True)
-    print("MESSAGE INPUT: ", response)
-    user_message = response
+        print("MESSAGE INPUT: ", response)
+        user_message = response
     # resp.redirect("/calendar")
 
 
@@ -105,10 +104,15 @@ def calendar_agent():
     print("IN CALENDAR AGENT")
     resp = VoiceResponse()
     gemini_response = {}
+    ended = False
     try:
         gemini_response = call_gemini_agent()
+        ended = gemini_response['ended']
+        gemini_response = gemini_response['message']
         print("GEMINI RESPONSE")
-
+        if ended:
+            resp.say("I hope I was of your assistance today.")
+            resp.hangup()
         if gemini_response.strip():  # Only say if there's actual content
             resp.say(gemini_response)
         else:
@@ -116,6 +120,9 @@ def calendar_agent():
     except Exception as e:
         print(f"Error calling Gemini agent: {e}")
         resp.say("Sorry, there was an error with the calendar agent.")
+    
+    
+    
     resp.redirect('/call')
     return str(resp), 200, {'Content-Type': 'text/xml'}
 
@@ -135,7 +142,7 @@ def call_gemini_agent():
         result = main(user_message, history)
         history = result['history']
         print("Gemini agent response")
-        return result['message']
+        return result
     except Exception as e:
         print(f"Error importing/running Gemini agent: {e}")
         return None

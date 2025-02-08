@@ -43,7 +43,7 @@ def main(user_message=None, history=None):
     print("main is starting")
 
     if not user_message or len(user_message) < 2:
-        user_message = "INSERT_INPUT_HERE"
+        user_message = "Tell me all the events from today"
     print("user message: ", user_message)
 
     if history is None:
