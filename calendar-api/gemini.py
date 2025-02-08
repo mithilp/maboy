@@ -65,7 +65,7 @@ def main():
             "description": json.loads(response.text)['description'],
             "start": json.loads(response.text)['start'],
             "end": json.loads(response.text)['end'],
-            "timeZone": json.loads(response.text)['timeZone']
+            "timeZone": json.loads(response.text).get('timeZone', 'America/New_York')
           }
           add_response = requests.post("http://127.0.0.1:5000/add-event", json=add_event_payload)
           if add_response.status_code == 201:
