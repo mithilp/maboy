@@ -146,5 +146,24 @@ def get_unread_messages():
     except HttpError as error:
         return jsonify({"error": str(error)}), 500
 
+@app.route('/delete/<message_id>', methods=['DELETE'])
+def delete_message(message_id):
+    try:
+        service = get_gmail_service()
+        
+        # Move the message to trash
+        service.users().messages().trash(
+            userId='me',
+            id=message_id
+        ).execute()
+
+        return jsonify({
+            "message": "Email deleted successfully",
+            "id": message_id
+        })
+
+    except HttpError as error:
+        return jsonify({"error": str(error)}), 500
+
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
