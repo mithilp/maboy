@@ -1,5 +1,5 @@
 backend/__pycache__/
 .DS_Store
-calendar-api/credentials.json
-calendar-api/token.json
+credentials.json
+token.json
 .env

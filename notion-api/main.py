@@ -29,6 +29,15 @@ def update_page(page_id, properties):
     response = requests.patch(url, headers=headers, json=payload)
     return response.json()
 
+def create_page(properties):
+    url = "https://api.notion.com/v1/pages"
+    payload = {
+        "parent": {"database_id": os.environ["DATABASE_ID"]},
+        "properties": properties
+    }
+    response = requests.post(url, headers=headers, json=payload)
+    return response.json()
+
 @app.route('/get-tasks', methods=['GET'])
 def get_today_tasks():
     pages = get_pages()
@@ -64,6 +73,21 @@ def update_task():
         properties["due"] = {"date": {"start": data["due"]}}
     
     result = update_page(data["id"], properties)
+    return jsonify(result)
+
+@app.route('/add-task', methods=['POST'])
+def add_task():
+    data = request.json
+    if not data or "name" not in data or "due" not in data:
+        return jsonify({"error": "Missing required fields (name, due)"}), 400
+    
+    properties = {
+        "Name": {"title": [{"text": {"content": data["name"]}}]},
+        "due": {"date": {"start": data["due"]}},
+        "Finished": {"checkbox": data.get("finished", False)}
+    }
+    
+    result = create_page(properties)
     return jsonify(result)
 
 if __name__ == '__main__':
