@@ -4,6 +4,8 @@ credentials.json
 token.json
 .env
 
+.venv/
+
 # backend
 
 # frontend
