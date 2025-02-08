@@ -47,7 +47,6 @@ def today_events():
 
 @app.route('/add-event', methods=['POST'])
 def add_event():
-    print("test")
     creds = get_credentials()
     try:
         service = build('calendar', 'v3', credentials=creds)
@@ -59,16 +58,16 @@ def add_event():
             'location': data.get('location', ''),
             'description': data.get('description', ''),
             'start': {
-                'dateTime': data.get('start_time', dt.datetime.now(dt.timezone.utc).isoformat()),
-                'timeZone': data.get('timezone', 'UTC'),
+          'dateTime': data.get('start_time', dt.datetime.now(dt.timezone.utc).isoformat()),
+          'timeZone': data.get('timezone', 'America/New_York'),
             },
             'end': {
-                'dateTime': data.get('end_time', (dt.datetime.now(dt.timezone.utc) + dt.timedelta(hours=1)).isoformat()),
-                'timeZone': data.get('timezone', 'UTC'),
+          'dateTime': data.get('end_time', (dt.datetime.now(dt.timezone.utc) + dt.timedelta(hours=1)).isoformat()),
+          'timeZone': data.get('timezone', 'America/New_York'),
             },
             'reminders': {
-                'useDefault': data.get('use_default_reminders', True),
-                'overrides': data.get('reminders', [])
+          'useDefault': data.get('use_default_reminders', True),
+          'overrides': data.get('reminders', [])
             },
             'attendees': data.get('attendees', []),
             'colorId': data.get('color_id', '1')
