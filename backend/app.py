@@ -83,7 +83,7 @@ def voice():
     resp = VoiceResponse()
     gather = Gather(num_digits=1, action='/gather', method='POST')
 
-    gather.say('Press 1.1 to interact with your google calendar agent.')
+    gather.say('Press 1 to interact with your google calendar agent. Press 2 to interact with you email agent')
     print("ABOUT TO GATHER")
     resp.append(gather)
     return str(resp)
