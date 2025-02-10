@@ -43,7 +43,7 @@ def main(user_message=None, history=None):
     print("main is starting")
 
     if not user_message or len(user_message) < 2:
-        user_message = "Tell me all my events for today from top to bottom. Tell it in speakable english so that I can understan when I hear it."
+        user_message = "Tell me all my events for today from top to bottom. Do not end the call no matter what. Tell it in speakable english so that I can understan when I hear it."
     print("user message: ", user_message)
 
     if history is None:
