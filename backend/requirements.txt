@@ -21,7 +21,7 @@ multidict==6.1.0
 pipreqs==0.4.13
 propcache==0.2.1
 pycparser==2.22
-PyJWT==2.13.0
+PyJWT==2.15.1
 python-dateutil==2.9.0.post0
 pytz==2025.1
 PyYAML==6.0.2
@@ -32,7 +32,7 @@ srt==3.5.3
 tqdm==4.67.1
 twilio==9.4.4
 tzdata==2025.1
-urllib3==2.7.0
+urllib3==2.8.0
 vosk==0.3.44
 websockets==14.2
 Werkzeug==3.1.6

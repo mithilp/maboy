@@ -33,7 +33,7 @@ itsdangerous==2.2.0
 Jinja2==3.1.6
 MarkupSafe==3.0.2
 multidict==6.1.0
-oauthlib==3.2.2
+oauthlib==4.0.0
 pipreqs==0.4.13
 propcache==0.2.1
 proto-plus==1.26.0
@@ -43,7 +43,7 @@ pyasn1_modules==0.4.1
 pycparser==2.22
 pydantic==2.10.6
 pydantic_core==2.27.2
-PyJWT==2.13.0
+PyJWT==2.15.1
 pyparsing==3.2.1
 python-dateutil==2.9.0.post0
 python-dotenv==1.2.2
@@ -60,7 +60,7 @@ twilio==9.4.4
 typing_extensions==4.12.2
 tzdata==2025.1
 uritemplate==4.1.1
-urllib3==2.7.0
+urllib3==2.8.0
 vosk==0.3.44
 websockets==14.2
 Werkzeug==3.1.6
